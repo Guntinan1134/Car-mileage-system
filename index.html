@@ -97,9 +97,17 @@
                 <option value="ฒข 9012 กทม">ฒข 9012 กทม. (Isuzu D-Max)</option>
             </select>
         </div>
-
+        
         <div class="form-group">
-            <label for="mileage">เลขไมล์ก่อนออกเดินทาง (กม.)</label>
+            <label for="tripStatus">ประเภทการบันทึก</label>
+            <select id="tripStatus" name="tripStatus" required>
+                <option value="ขาไป (รับรถ)">➡️ ขาไป (รับรถ)</option>
+                <option value="ขากลับ (คืนรถ)">⬅️ ขากลับ (คืนรถ)</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="mileage">เลขไมล์หน้าปัดรถ ณ ปัจจุบัน (กม.)</label>
             <input type="number" id="mileage" name="mileage" placeholder="เช่น 125000" min="0" required>
         </div>
 
@@ -114,7 +122,7 @@
 
 <script>
     // ⚠️ วาง URL ที่ลงท้ายด้วย /exec ตรงนี้ ⚠️
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxv55wSifaEEURW3RJZmPH7Ilx6g55nH-cot1QgWAmamcnSRzN0iWkICuJ0-P4IYojGpQ/exec'; 
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzjBVE_RhDKg-2AqSs_t7Fdm2n7OVQIEm5p0yD3pBSHJb7XGq7xUv5SIiN30torw5q7HA/exec'; 
 
     const form = document.forms['carForm'];
     const btn = document.getElementById('submitBtn');

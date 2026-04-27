@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บันทึกการใช้รถยนต์บริษัท</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .form-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 450px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #444;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+            font-family: inherit;
+        }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .btn-submit {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+        .btn-submit:disabled {
+            background-color: #999;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>🚗 บันทึกการใช้รถยนต์</h2>
+    <form id="carForm">
+        
+        <div class="form-group">
+            <label for="employeeName">ชื่อ-นามสกุล / รหัสพนักงาน</label>
+            <input type="text" id="employeeName" name="employeeName" placeholder="เช่น สมชาย ใจดี (EMP001)" required>
+        </div>
+
+        <div class="form-group">
+            <label for="licensePlate">ทะเบียนรถ</label>
+            <select id="licensePlate" name="licensePlate" required>
+                <option value="" disabled selected>-- เลือกทะเบียนรถ --</option>
+                <option value="กข 1234 กทม">กข 1234 กทม. (Toyota Hilux)</option>
+                <option value="ฮภ 5678 กทม">ฮภ 5678 กทม. (Honda City)</option>
+                <option value="ฒข 9012 กทม">ฒข 9012 กทม. (Isuzu D-Max)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="mileage">เลขไมล์ก่อนออกเดินทาง (กม.)</label>
+            <input type="number" id="mileage" name="mileage" placeholder="เช่น 125000" min="0" required>
+        </div>
+
+        <div class="form-group">
+            <label for="destination">สถานที่ / รายละเอียดการปฏิบัติงาน</label>
+            <textarea id="destination" name="destination" rows="3" placeholder="ระบุสถานที่และจุดประสงค์การเดินทาง" required></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">บันทึกข้อมูล</button>
+    </form>
+</div>
+
+<script>
+    // ⚠️ วาง URL ที่ลงท้ายด้วย /exec ตรงนี้ ⚠️
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxv55wSifaEEURW3RJZmPH7Ilx6g55nH-cot1QgWAmamcnSRzN0iWkICuJ0-P4IYojGpQ/exec'; 
+
+    const form = document.forms['carForm'];
+    const btn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', e => {
+        e.preventDefault(); 
+        
+        btn.disabled = true;
+        btn.innerText = "กำลังบันทึกข้อมูล... ⏳";
+
+        // เพิ่มโหมด no-cors ตรงนี้แล้ว
+        fetch(scriptURL, { method: 'POST', body: new FormData(form), mode: 'no-cors' })
+            .then(response => {
+                alert("✅ บันทึกข้อมูลสำเร็จ!");
+                btn.disabled = false;
+                btn.innerText = "บันทึกข้อมูล";
+                form.reset(); 
+            })
+            .catch(error => {
+                alert("❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+                console.error('Error!', error.message);
+                btn.disabled = false;
+                btn.innerText = "บันทึกข้อมูล";
+            });
+    });
+</script>
+
+</body>
+</html>

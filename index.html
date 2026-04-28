@@ -207,8 +207,11 @@
             
             img.onload = function() {
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 600; 
-                const MAX_HEIGHT = 600;
+                
+                // 🌟 1. ปรับขนาดสูงสุดจาก 600 เป็น 1200 (ใหญ่ขึ้น 2 เท่า)
+                const MAX_WIDTH = 1200; 
+                const MAX_HEIGHT = 1200;
+                
                 let width = img.width;
                 let height = img.height;
 
@@ -223,7 +226,8 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6); 
+                // 🌟 2. ปรับคุณภาพจาก 0.6 เป็น 0.8 (เพื่อให้ภาพคมชัดขึ้น)
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8); 
                 hiddenInput.value = compressedBase64;
                 
                 btnSubmit.innerText = "กำลังส่งข้อมูลขึ้นระบบ... 🚀";
@@ -231,7 +235,6 @@
             }
         };
     }
-
     function sendData() {
         fetch(scriptURL, { method: 'POST', body: new FormData(form), mode: 'no-cors' })
             .then(response => {

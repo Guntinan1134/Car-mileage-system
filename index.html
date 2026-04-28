@@ -137,7 +137,7 @@
 </div>
 
 <script>
-    // ⚠️ อย่าลืมวาง URL จาก Apps Script ของคุณที่นี่
+    
     const scriptURL = 'https://script.google.com/macros/s/AKfycbxQ8YF6faK3VX7BQi0Fm19zi1Bd1sfv2ndGUFoqUfN6blzdHVKSGv7UP1CREx7dOABjNw/exec'; 
 
     const form = document.forms['carForm'];
@@ -149,10 +149,10 @@
     const latInput = document.getElementById('latitude');
     const lngInput = document.getElementById('longitude');
 
-    // 🌟 ระบบดึงพิกัด GPS (ทำงานเมื่อกดปุ่มสีฟ้าเท่านั้น)
+    /
     btnGps.addEventListener('click', () => {
         gpsStatus.innerText = "กำลังค้นหา... ⏳";
-        gpsStatus.style.color = "#ff9800"; // สีส้ม
+        gpsStatus.style.color = "#ff9800"; 
         
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -160,13 +160,13 @@
                     latInput.value = position.coords.latitude;
                     lngInput.value = position.coords.longitude;
                     gpsStatus.innerText = "ได้พิกัดแล้ว ✅";
-                    gpsStatus.style.color = "#28a745"; // สีเขียว
+                    gpsStatus.style.color = "#28a745"; 
                 },
                 function(error) {
                     gpsStatus.innerText = "หาพิกัดไม่พบ ❌";
-                    gpsStatus.style.color = "#dc3545"; // สีแดง
+                    gpsStatus.style.color = "#dc3545"; 
                 },
-                // ใช้โหมดแม่นยำต่ำเพื่อให้ได้พิกัดไวที่สุดจากเสามือถือ ไม่ต้องรอดาวเทียม
+                
                 { enableHighAccuracy: false, timeout: 5000, maximumAge: 10000 }
             );
         } else {
@@ -175,7 +175,7 @@
         }
     });
 
-    // 🌟 ระบบบันทึกข้อมูล (ตัด GPS ออกไปเลย จะได้ไม่ค้าง)
+    
     form.addEventListener('submit', e => {
         e.preventDefault(); 
 
@@ -190,11 +190,11 @@
             return; 
         }
 
-        // เริ่มขั้นตอนส่งข้อมูลทันที ไม่ต้องรอ GPS แล้ว!
+        
         processImageAndSend(file);
     });
 
-    // ฟังก์ชันย่อขนาดรูป (ทำให้เว็บไวขึ้น)
+   
     function processImageAndSend(file) {
         btnSubmit.disabled = true;
         btnSubmit.innerText = "กำลังเตรียมรูปภาพและบันทึก... ⏳";
@@ -208,7 +208,7 @@
             img.onload = function() {
                 const canvas = document.createElement('canvas');
                 
-                // 🌟 1. ปรับขนาดสูงสุดจาก 600 เป็น 1200 (ใหญ่ขึ้น 2 เท่า)
+                
                 const MAX_WIDTH = 1200; 
                 const MAX_HEIGHT = 1200;
                 
@@ -226,7 +226,7 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // 🌟 2. ปรับคุณภาพจาก 0.6 เป็น 0.8 (เพื่อให้ภาพคมชัดขึ้น)
+                
                 const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8); 
                 hiddenInput.value = compressedBase64;
                 
@@ -244,7 +244,7 @@
                 btnSubmit.disabled = false;
                 btnSubmit.innerText = "บันทึกข้อมูล";
                 
-                // ล้างค่าหลังจากบันทึกเสร็จ
+                
                 form.reset(); 
                 hiddenInput.value = ""; 
                 latInput.value = "";

@@ -129,7 +129,7 @@
 </div>
 
 <script>
-    
+    // ⚠️ วาง URL ใหม่จาก Apps Script ของคุณที่นี่
     const scriptURL = 'https://script.google.com/macros/s/AKfycbxQ8YF6faK3VX7BQi0Fm19zi1Bd1sfv2ndGUFoqUfN6blzdHVKSGv7UP1CREx7dOABjNw/exec'; 
 
     const form = document.forms['carForm'];
@@ -140,45 +140,66 @@
     form.addEventListener('submit', e => {
         e.preventDefault(); 
 
-        
         if (!form.checkValidity()) {
             form.reportValidity(); 
             return; 
         }
 
-        
         const file = fileInput.files[0];
         if (!file) {
             alert("📸 แจ้งเตือน: กรุณาถ่ายรูปหรืออัปโหลดรูปเลขไมล์ก่อนกดส่งครับ!");
-            return;
+            return; 
         }
 
-        
         btn.disabled = true;
-        btn.innerText = "กำลังอัปโหลดรูปและบันทึกข้อมูล... ⏳";
+        btn.innerText = "📍 กำลังขอพิกัด GPS..."; // อัปเดตข้อความ
 
-        
+        // 🌟 ขอสิทธิ์เข้าถึงตำแหน่ง GPS จากมือถือ
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    // ถ้าได้ตำแหน่งมา ให้ใส่ในช่องลับ
+                    document.getElementById('latitude').value = position.coords.latitude;
+                    document.getElementById('longitude').value = position.coords.longitude;
+                    processImageAndSend(file); // ไปขั้นตอนแปลรูป
+                },
+                function(error) {
+                    // ถ้าพนักงานไม่ยอมให้ GPS หรือเครื่องไม่มี GPS
+                    alert("⚠️ ไม่สามารถดึงตำแหน่งได้ หรือคุณยังไม่ได้อนุญาตให้เว็บเข้าถึง GPS ระบบจะบันทึกข้อมูลโดยไม่มีพิกัดครับ");
+                    processImageAndSend(file); // ยอมให้ส่งต่อแบบไม่มี GPS
+                },
+                { enableHighAccuracy: true } // บังคับขอพิกัดแบบแม่นยำสูง
+            );
+        } else {
+            alert("เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง");
+            processImageAndSend(file);
+        }
+    });
+
+    // แยกขั้นตอนการแปลรูปออกมา เพื่อให้รอ GPS ทำงานเสร็จก่อน
+    function processImageAndSend(file) {
+        btn.innerText = "กำลังอัปโหลดรูปและบันทึกข้อมูล... ⏳";
         const reader = new FileReader();
         reader.onload = function(event) {
             hiddenInput.value = event.target.result;
             sendData(); 
         };
         reader.readAsDataURL(file);
-    });
+    }
 
-    
     function sendData() {
         fetch(scriptURL, { method: 'POST', body: new FormData(form), mode: 'no-cors' })
             .then(response => {
-                alert("✅ บันทึกข้อมูลและอัปโหลดรูปสำเร็จ!");
+                alert("✅ บันทึกข้อมูล รูปภาพ และพิกัด GPS สำเร็จ!");
                 btn.disabled = false;
                 btn.innerText = "บันทึกข้อมูล";
                 form.reset(); 
                 hiddenInput.value = ""; 
+                document.getElementById('latitude').value = "";
+                document.getElementById('longitude').value = "";
             })
             .catch(error => {
-                alert("❌ เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง");
-                console.error('Error!', error.message);
+                alert("❌ เกิดข้อผิดพลาดในการเชื่อมต่อ");
                 btn.disabled = false;
                 btn.innerText = "บันทึกข้อมูล";
             });

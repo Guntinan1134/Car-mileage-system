@@ -129,13 +129,34 @@
 </div>
 
 <script>
-    // ⚠️ วาง URL ใหม่จาก Apps Script ของคุณที่นี่
+    // ⚠️ อย่าลืมวาง URL ใหม่จาก Apps Script ของคุณที่นี่
     const scriptURL = 'https://script.google.com/macros/s/AKfycbxQ8YF6faK3VX7BQi0Fm19zi1Bd1sfv2ndGUFoqUfN6blzdHVKSGv7UP1CREx7dOABjNw/exec'; 
 
     const form = document.forms['carForm'];
     const btn = document.getElementById('submitBtn');
     const fileInput = document.getElementById('mileageUpload');
     const hiddenInput = document.getElementById('mileageImage');
+
+    // 🌟 ทริคใหม่: แอบขอพิกัดเตรียมไว้ตั้งแต่เปิดหน้าเว็บ!
+    let currentLat = "";
+    let currentLng = "";
+
+    if (navigator.geolocation) {
+        // ใช้ watchPosition เพื่อดึงตำแหน่งแบบ Real-time รอไว้เลย
+        navigator.geolocation.watchPosition(
+            function(position) {
+                // ทันทีที่หาพิกัดเจอ จะเอามาหยอดใส่ช่องลับเตรียมไว้เลย
+                currentLat = position.coords.latitude;
+                currentLng = position.coords.longitude;
+                document.getElementById('latitude').value = currentLat;
+                document.getElementById('longitude').value = currentLng;
+            },
+            function(error) {
+                console.log("ยังไม่ได้พิกัด หรือ พนักงานยังไม่อนุญาต");
+            },
+            { enableHighAccuracy: false, maximumAge: 5000 } 
+        );
+    }
 
     form.addEventListener('submit', e => {
         e.preventDefault(); 
@@ -151,52 +172,65 @@
             return; 
         }
 
-        btn.disabled = true;
-        btn.innerText = "📍 กำลังขอพิกัด GPS..."; // อัปเดตข้อความ
-
-        // 🌟 ขอสิทธิ์เข้าถึงตำแหน่ง GPS จากมือถือ
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    // ถ้าได้ตำแหน่งมา ให้ใส่ในช่องลับ
-                    document.getElementById('latitude').value = position.coords.latitude;
-                    document.getElementById('longitude').value = position.coords.longitude;
-                    processImageAndSend(file); // ไปขั้นตอนแปลรูป
-                },
-                function(error) {
-                    // ถ้าพนักงานไม่ยอมให้ GPS หรือเครื่องไม่มี GPS
-                    alert("⚠️ ไม่สามารถดึงตำแหน่งได้ หรือคุณยังไม่ได้อนุญาตให้เว็บเข้าถึง GPS ระบบจะบันทึกข้อมูลโดยไม่มีพิกัดครับ");
-                    processImageAndSend(file); // ยอมให้ส่งต่อแบบไม่มี GPS
-                },
-                { enableHighAccuracy: true } // บังคับขอพิกัดแบบแม่นยำสูง
-            );
-        } else {
-            alert("เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง");
-            processImageAndSend(file);
-        }
+        // 🚀 ข้ามขั้นตอนรอ GPS ไปเลย! เพราะเราแอบเตรียมพิกัดไว้แล้ว
+        // เรียกใช้ระบบย่อขนาดรูปและส่งข้อมูลได้ทันที
+        processImageAndSend(file);
     });
 
-    // แยกขั้นตอนการแปลรูปออกมา เพื่อให้รอ GPS ทำงานเสร็จก่อน
+    // ระบบบีบอัดรูปภาพ (ตัวที่ทำให้โหลดไวปรื๊ด)
     function processImageAndSend(file) {
-        btn.innerText = "กำลังอัปโหลดรูปและบันทึกข้อมูล... ⏳";
+        btn.disabled = true;
+        btn.innerText = "กำลังอัปโหลดและบันทึกข้อมูล... ⏳";
+        
         const reader = new FileReader();
-        reader.onload = function(event) {
-            hiddenInput.value = event.target.result;
-            sendData(); 
-        };
         reader.readAsDataURL(file);
+        reader.onload = function(event) {
+            const img = new Image();
+            img.src = event.target.result;
+            
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 800; 
+                const MAX_HEIGHT = 800;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                hiddenInput.value = compressedBase64;
+                sendData(); 
+            }
+        };
     }
 
     function sendData() {
         fetch(scriptURL, { method: 'POST', body: new FormData(form), mode: 'no-cors' })
             .then(response => {
-                alert("✅ บันทึกข้อมูล รูปภาพ และพิกัด GPS สำเร็จ!");
+                // แจ้งเตือนว่าได้พิกัดด้วยไหม
+                let msg = currentLat !== "" ? "✅ บันทึกข้อมูล รูปภาพ และพิกัด GPS สำเร็จ!" : "✅ บันทึกข้อมูลและรูปภาพสำเร็จ! (ไม่ได้พิกัด GPS)";
+                alert(msg);
+                
                 btn.disabled = false;
                 btn.innerText = "บันทึกข้อมูล";
                 form.reset(); 
                 hiddenInput.value = ""; 
-                document.getElementById('latitude').value = "";
-                document.getElementById('longitude').value = "";
+                // ไม่ต้องลบค่า GPS ทิ้ง เผื่อกรอกคันต่อไป
             })
             .catch(error => {
                 alert("❌ เกิดข้อผิดพลาดในการเชื่อมต่อ");

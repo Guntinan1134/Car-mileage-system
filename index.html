@@ -106,11 +106,8 @@
         </div>
         
         <div class="form-group">
-            <label for="tripStatus">ประเภทการบันทึก</label>
-            <select id="tripStatus" name="tripStatus" required>
-                <option value="ขาไป (รับรถ)">➡️ ขาไป (รับรถ)</option>
-                <option value="ขากลับ (คืนรถ)">⬅️ ขากลับ (คืนรถ)</option>
-            </select>
+            <label for="tripStatus">📍 จุดเริ่มต้น (ต้นทาง)</label>
+            <input type="text" id="tripStatus" name="tripStatus" placeholder="เช่น ออฟฟิศ, ไซต์งานลาดพร้าว, บ้านลูกค้า..." required>
         </div>
         
         <div class="form-group">
@@ -120,8 +117,8 @@
         </div>
 
         <div class="form-group">
-            <label for="destination">สถานที่ / รายละเอียดการปฏิบัติงาน</label>
-            <textarea id="destination" name="destination" rows="3" placeholder="ระบุสถานที่และจุดประสงค์การเดินทาง" required></textarea>
+            <label for="destination">🏁 จุดหมาย (ปลายทาง / รายละเอียดงาน)</label>
+            <textarea id="destination" name="destination" rows="2" placeholder="ระบุสถานที่ปลายทาง และจุดประสงค์การใช้รถ" required></textarea>
         </div>
         
         <div class="form-group" style="background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px dashed #ccc;">

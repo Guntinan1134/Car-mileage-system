@@ -80,12 +80,12 @@
 <body>
 
 <div class="form-container">
-    <h2>🚗 บันทึกการใช้รถยนต์</h2>
+    <h2>🚗 บันทึกการใช้รถยนต์ SunRoBoTic</h2>
     <form id="carForm">
         
         <div class="form-group">
             <label for="employeeName">ชื่อ-นามสกุล / รหัสพนักงาน</label>
-            <input type="text" id="employeeName" name="employeeName" placeholder="เช่น สมชาย ใจดี (EMP001)" required>
+            <input type="text" id="employeeName" name="employeeName" placeholder="กรุณาระบุชื่อจริง-นามสกุลเท่านั้น" required>
         </div>
 
         <div class="form-group">
@@ -121,7 +121,7 @@
 </div>
 
 <script>
-    // ⚠️ วาง URL ที่ลงท้ายด้วย /exec ตรงนี้ ⚠️
+    
     const scriptURL = 'https://script.google.com/macros/s/AKfycbzjBVE_RhDKg-2AqSs_t7Fdm2n7OVQIEm5p0yD3pBSHJb7XGq7xUv5SIiN30torw5q7HA/exec'; 
 
     const form = document.forms['carForm'];
@@ -133,7 +133,7 @@
         btn.disabled = true;
         btn.innerText = "กำลังบันทึกข้อมูล... ⏳";
 
-        // เพิ่มโหมด no-cors ตรงนี้แล้ว
+        
         fetch(scriptURL, { method: 'POST', body: new FormData(form), mode: 'no-cors' })
             .then(response => {
                 alert("✅ บันทึกข้อมูลสำเร็จ!");

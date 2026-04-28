@@ -129,7 +129,7 @@
 </div>
 
 <script>
-    // ⚠️ อยาลืมเอา URL จาก Apps Script อันใหม่มาวางตรงนี้นะครับ
+    
     const scriptURL = 'https://script.google.com/macros/s/AKfycbxQ8YF6faK3VX7BQi0Fm19zi1Bd1sfv2ndGUFoqUfN6blzdHVKSGv7UP1CREx7dOABjNw/exec'; 
 
     const form = document.forms['carForm'];
@@ -139,24 +139,34 @@
 
     form.addEventListener('submit', e => {
         e.preventDefault(); 
+
+        
+        if (!form.checkValidity()) {
+            form.reportValidity(); 
+            return; 
+        }
+
+        
+        const file = fileInput.files[0];
+        if (!file) {
+            alert("📸 แจ้งเตือน: กรุณาถ่ายรูปหรืออัปโหลดรูปเลขไมล์ก่อนกดส่งครับ!");
+            return;
+        }
+
+        
         btn.disabled = true;
         btn.innerText = "กำลังอัปโหลดรูปและบันทึกข้อมูล... ⏳";
 
-        const file = fileInput.files[0];
         
-        if (file) {
-            // ระบบแปลงรูปภาพเป็นรหัส Base64 ก่อนส่งไป Google
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                hiddenInput.value = event.target.result;
-                sendData();
-            };
-            reader.readAsDataURL(file);
-        } else {
-            sendData();
-        }
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            hiddenInput.value = event.target.result;
+            sendData(); 
+        };
+        reader.readAsDataURL(file);
     });
 
+    
     function sendData() {
         fetch(scriptURL, { method: 'POST', body: new FormData(form), mode: 'no-cors' })
             .then(response => {
@@ -164,10 +174,11 @@
                 btn.disabled = false;
                 btn.innerText = "บันทึกข้อมูล";
                 form.reset(); 
-                hiddenInput.value = ""; // ล้างค่ารูป
+                hiddenInput.value = ""; 
             })
             .catch(error => {
-                alert("❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+                alert("❌ เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง");
+                console.error('Error!', error.message);
                 btn.disabled = false;
                 btn.innerText = "บันทึกข้อมูล";
             });

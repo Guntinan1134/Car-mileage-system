@@ -29,19 +29,14 @@
             color: #333;
             margin-bottom: 25px;
         }
-        .form-group {
-            margin-bottom: 18px;
-        }
+        .form-group { margin-bottom: 18px; }
         label {
             display: block;
             margin-bottom: 8px;
             color: #444;
             font-weight: bold;
         }
-        input[type="text"],
-        input[type="number"],
-        select,
-        textarea {
+        input[type="text"], input[type="number"], select, textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid #ccc;
@@ -49,11 +44,6 @@
             box-sizing: border-box;
             font-size: 16px;
             font-family: inherit;
-        }
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
         }
         .btn-submit {
             width: 100%;
@@ -68,30 +58,23 @@
             transition: background-color 0.3s;
             margin-top: 10px;
         }
-        .btn-submit:hover {
-            background-color: #0056b3;
-        }
-        .btn-submit:disabled {
-            background-color: #999;
-            cursor: not-allowed;
-        }
+        .btn-submit:hover { background-color: #0056b3; }
+        .btn-submit:disabled { background-color: #999; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
 <div class="form-container">
-    
     <div style="text-align: center; margin-bottom: 10px;">
-        <img src="logo.png" alt="SunRoBoTic Logo" style="max-width: 150px; height: auto;">
+        <img src="logo.png" alt="SunRoBoTic Logo" style="max-width: 120px; height: auto;">
     </div>
-
     <h2 style="margin-top: 0;">บันทึกการใช้รถยนต์</h2>
     
     <form id="carForm">
         
         <div class="form-group">
             <label for="employeeName">ชื่อ-นามสกุล</label>
-            <input type="text" id="employeeName" name="employeeName" placeholder="กรุณาระบุชื่อ" required>
+            <input type="text" id="employeeName" name="employeeName" placeholder="กรุณาระบุชื่อจริง-นามสกุล" required>
         </div>
 
         <div class="form-group">
@@ -107,11 +90,23 @@
         
         <div class="form-group">
             <label for="tripStatus">📍 จุดเริ่มต้น (ต้นทาง)</label>
-            <input type="text" id="tripStatus" name="tripStatus" placeholder="ระบุสถานที่ต้นทาง" required>
+            <input type="text" id="tripStatus" name="tripStatus" placeholder="เช่น ออฟฟิศ, ไซต์งาน, บ้านลูกค้า..." required>
         </div>
-        
+
+        <div class="form-group" style="background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px dashed #ccc;">
+            <label style="margin-bottom: 10px;">พิกัดตำแหน่ง (เพื่อยืนยันสถานที่)</label>
+            <button type="button" id="btnGps" style="padding: 10px 15px; background-color: #17a2b8; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%;">
+                📍 กดเพื่อดึงตำแหน่ง GPS
+            </button>
+            <div style="text-align: center; margin-top: 10px;">
+                <span id="gpsStatus" style="font-size: 14px; color: #666; font-weight: bold;">ยังไม่มีพิกัด</span>
+            </div>
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+        </div>
+
         <div class="form-group">
-            <label for="mileageUpload">ถ่ายรูปเลขไมล์หน้าปัดรถ</label>
+            <label for="mileageUpload">📸 ถ่ายรูปหน้าปัดเลขไมล์รถ</label>
             <input type="file" id="mileageUpload" accept="image/*" capture="environment" required>
             <input type="hidden" id="mileageImage" name="mileageImage">
         </div>
@@ -120,24 +115,13 @@
             <label for="destination">🏁 จุดหมาย (ปลายทาง / รายละเอียดงาน)</label>
             <textarea id="destination" name="destination" rows="2" placeholder="ระบุสถานที่ปลายทาง และจุดประสงค์การใช้รถ" required></textarea>
         </div>
-        
-        <div class="form-group" style="background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px dashed #ccc;">
-            <label style="margin-bottom: 10px;">พิกัดตำแหน่ง (เพื่อยืนยันสถานที่)</label>
-            <button type="button" id="btnGps" style="padding: 10px 15px; background-color: #17a2b8; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
-                📍 กดเพื่อดึงตำแหน่ง
-            </button>
-            <span id="gpsStatus" style="margin-left: 10px; font-size: 14px; color: #666; font-weight: bold;">ยังไม่มีพิกัด</span>
-            
-            <input type="hidden" id="latitude" name="latitude">
-            <input type="hidden" id="longitude" name="longitude">
-        </div>
 
         <button type="submit" class="btn-submit" id="submitBtn">บันทึกข้อมูล</button>
     </form>
 </div>
 
 <script>
-    
+   
     const scriptURL = 'https://script.google.com/macros/s/AKfycbxQ8YF6faK3VX7BQi0Fm19zi1Bd1sfv2ndGUFoqUfN6blzdHVKSGv7UP1CREx7dOABjNw/exec'; 
 
     const form = document.forms['carForm'];
@@ -149,7 +133,7 @@
     const latInput = document.getElementById('latitude');
     const lngInput = document.getElementById('longitude');
 
-    /
+    
     btnGps.addEventListener('click', () => {
         gpsStatus.innerText = "กำลังค้นหา... ⏳";
         gpsStatus.style.color = "#ff9800"; 
@@ -163,14 +147,13 @@
                     gpsStatus.style.color = "#28a745"; 
                 },
                 function(error) {
-                    gpsStatus.innerText = "หาพิกัดไม่พบ ❌";
+                    gpsStatus.innerText = "หาพิกัดไม่พบ หรือคุณไม่ได้เปิด GPS ❌";
                     gpsStatus.style.color = "#dc3545"; 
                 },
-                
                 { enableHighAccuracy: false, timeout: 5000, maximumAge: 10000 }
             );
         } else {
-            gpsStatus.innerText = "เครื่องไม่รองรับ ❌";
+            gpsStatus.innerText = "เครื่องไม่รองรับ GPS ❌";
             gpsStatus.style.color = "#dc3545";
         }
     });
@@ -190,11 +173,10 @@
             return; 
         }
 
-        
         processImageAndSend(file);
     });
 
-   
+    
     function processImageAndSend(file) {
         btnSubmit.disabled = true;
         btnSubmit.innerText = "กำลังเตรียมรูปภาพและบันทึก... ⏳";
@@ -207,11 +189,8 @@
             
             img.onload = function() {
                 const canvas = document.createElement('canvas');
-                
-                
                 const MAX_WIDTH = 1200; 
                 const MAX_HEIGHT = 1200;
-                
                 let width = img.width;
                 let height = img.height;
 
@@ -226,7 +205,6 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                
                 const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8); 
                 hiddenInput.value = compressedBase64;
                 
@@ -235,6 +213,8 @@
             }
         };
     }
+
+    
     function sendData() {
         fetch(scriptURL, { method: 'POST', body: new FormData(form), mode: 'no-cors' })
             .then(response => {
@@ -243,7 +223,6 @@
                 
                 btnSubmit.disabled = false;
                 btnSubmit.innerText = "บันทึกข้อมูล";
-                
                 
                 form.reset(); 
                 hiddenInput.value = ""; 
@@ -259,6 +238,5 @@
             });
     }
 </script>
-
 </body>
 </html>

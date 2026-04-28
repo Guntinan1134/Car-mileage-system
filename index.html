@@ -80,7 +80,13 @@
 <body>
 
 <div class="form-container">
-    <h2>🚗 บันทึกการใช้รถยนต์ SunRoBoTic</h2>
+    
+    <div style="text-align: center; margin-bottom: 10px;">
+        <img src="photo/logo.png" alt="SunRoBoTic Logo" style="max-width: 150px; height: auto;">
+    </div>
+
+    <h2 style="margin-top: 0;">บันทึกการใช้รถยนต์</h2>
+    
     <form id="carForm">
         
         <div class="form-group">
@@ -92,10 +98,11 @@
             <label for="licensePlate">ทะเบียนรถ</label>
             <select id="licensePlate" name="licensePlate" required>
                 <option value="" disabled selected>-- เลือกทะเบียนรถ --</option>
-                <option value="กข 1234 กทม">กข 1234 กทม. (Toyota Hilux)</option>
-                <option value="ฮภ 5678 กทม">ฮภ 5678 กทม. (Honda City)</option>
-                <option value="ฒข 9012 กทม">ฒข 9012 กทม. (Isuzu D-Max)</option>
-            </select>
+                <option value="4ฒข 6855 กทม">4ฒข 6855 กทม. (Toyota Hilux Champ)</option>
+                <option value="3ฒฒ 2644 กทม">3ฒฒ 2644 กทม. (Toyota Hilux Revo Cab)</option>
+                <option value="3ฒฐ 6945 กทม">3ฒฐ 6945 กทม. (Toyota Hilux Revo Cab)</option>
+                <option value="3ฒม 9215 กทม">3ฒม 9215 กทม. (Toyota Hilux Revo ตอนเดียว)</option>
+            </select> 
         </div>
         
         <div class="form-group">
@@ -107,8 +114,9 @@
         </div>
         
         <div class="form-group">
-            <label for="mileage">เลขไมล์หน้าปัดรถ ณ ปัจจุบัน (กม.)</label>
-            <input type="number" id="mileage" name="mileage" placeholder="เช่น 125000" min="0" required>
+            <label for="mileageUpload">ถ่ายรูปเลขไมล์หน้าปัดรถ</label>
+            <input type="file" id="mileageUpload" accept="image/*" capture="environment" required>
+            <input type="hidden" id="mileageImage" name="mileageImage">
         </div>
 
         <div class="form-group">
@@ -121,33 +129,49 @@
 </div>
 
 <script>
-    
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzjBVE_RhDKg-2AqSs_t7Fdm2n7OVQIEm5p0yD3pBSHJb7XGq7xUv5SIiN30torw5q7HA/exec'; 
+    // ⚠️ อยาลืมเอา URL จาก Apps Script อันใหม่มาวางตรงนี้นะครับ
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxQ8YF6faK3VX7BQi0Fm19zi1Bd1sfv2ndGUFoqUfN6blzdHVKSGv7UP1CREx7dOABjNw/exec'; 
 
     const form = document.forms['carForm'];
     const btn = document.getElementById('submitBtn');
+    const fileInput = document.getElementById('mileageUpload');
+    const hiddenInput = document.getElementById('mileageImage');
 
     form.addEventListener('submit', e => {
         e.preventDefault(); 
-        
         btn.disabled = true;
-        btn.innerText = "กำลังบันทึกข้อมูล... ⏳";
+        btn.innerText = "กำลังอัปโหลดรูปและบันทึกข้อมูล... ⏳";
 
+        const file = fileInput.files[0];
         
+        if (file) {
+            // ระบบแปลงรูปภาพเป็นรหัส Base64 ก่อนส่งไป Google
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                hiddenInput.value = event.target.result;
+                sendData();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            sendData();
+        }
+    });
+
+    function sendData() {
         fetch(scriptURL, { method: 'POST', body: new FormData(form), mode: 'no-cors' })
             .then(response => {
-                alert("✅ บันทึกข้อมูลสำเร็จ!");
+                alert("✅ บันทึกข้อมูลและอัปโหลดรูปสำเร็จ!");
                 btn.disabled = false;
                 btn.innerText = "บันทึกข้อมูล";
                 form.reset(); 
+                hiddenInput.value = ""; // ล้างค่ารูป
             })
             .catch(error => {
                 alert("❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
-                console.error('Error!', error.message);
                 btn.disabled = false;
                 btn.innerText = "บันทึกข้อมูล";
             });
-    });
+    }
 </script>
 
 </body>

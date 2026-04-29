@@ -79,31 +79,34 @@
     const scriptURL = "https://script.google.com/macros/s/AKfycbxQ8YF6faK3VX7BQi0Fm19zi1Bd1sfv2ndGUFoqUfN6blzdHVKSGv7UP1CREx7dOABjNw/exec"; 
 
     function loadCarList() {
-        fetch(scriptURL)
-        .then(res => res.json())
+        // ==========================================
+    // 🌟 ระบบดึงรายชื่อรถจาก Google Sheets อัตโนมัติ (อัปเดตรองรับสถานะ)
+    // ==========================================
+    fetch(scriptURL)
+        .then(response => response.json())
         .then(data => {
-            const select = document.getElementById("licensePlate");
-            select.innerHTML = '<option value="" disabled selected>-- เลือกทะเบียนรถ --</option>';
+            const selectCar = document.getElementById("licensePlate");
+            selectCar.innerHTML = '<option value="" disabled selected>-- เลือกทะเบียนรถ --</option>'; // ล้างข้อความโหลด
             
+            // เอาข้อมูลที่ได้มา วนลูปแยก ทะเบียน และ สถานะ
             data.forEach(car => {
-                let opt = document.createElement("option");
-                opt.value = car.plate; 
+                let option = document.createElement("option");
+                option.value = car.plate; // ค่าที่จะส่งเข้า Google Sheets คือ ทะเบียน
                 
-                // เช็คสถานะรถ
+                // เช็คสถานะเพื่อแสดงข้อความ
                 if (car.status === "ปกติ") {
-                    opt.text = "🚗 " + car.plate + " (พร้อมใช้งาน)";
+                    option.text = "🚗 " + car.plate + " (พร้อมใช้งาน)";
                 } else {
-                    // ถ้ารถพัง หรือ ซ่อม ให้เปลี่ยนข้อความ และ "ล็อกไม่ให้กดเลือกได้"
-                    opt.text = "❌ " + car.plate + " (สถานะ: " + car.status + ")";
-                    opt.disabled = true; // 🌟 คำสั่งนี้แหละครับที่ล็อกไม่ให้พนักงานเลือก
+                    option.text = "❌ " + car.plate + " (สถานะ: " + car.status + ")";
+                    option.disabled = true; // ล็อกไม่ให้กดเลือกรถที่พัง/ซ่อมได้
                 }
                 
-                select.appendChild(opt);
+                selectCar.appendChild(option);
             });
         })
         .catch(error => {
-            console.error("Error:", error);
-            document.getElementById("licensePlate").innerHTML = '<option value="">❌ โหลดไม่สำเร็จ</option>';
+            console.error("Error loading cars:", error);
+            document.getElementById("licensePlate").innerHTML = '<option value="">❌ โหลดข้อมูลไม่สำเร็จ</option>';
         });
     }
 

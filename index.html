@@ -31,7 +31,10 @@
     </div>
     
     <form id="carForm">
-        <input type="hidden" id="employeeName" name="employeeName">
+        <div class="form-group">
+            <label for="employeeName">👤 ชื่อ(ผู้เบิกรถ)</label>
+            <input type="text" id="employeeName" name="employeeName" placeholder="" required>
+        </div>
 
         <div class="form-group">
             <label for="licensePlate">ทะเบียนรถ</label>
@@ -60,7 +63,7 @@
         </div>
 
         <div class="form-group">
-            <label for="mileageUpload">📸 รูปหน้าปัดเลขไมล์</label>
+            <label for="mileageUpload">📸 รูปหน้าปัดเลขไมล์(แนวนอน)</label>
             <input type="file" id="mileageUpload" accept="image/*" capture="environment" required>
             <input type="hidden" id="mileageImage" name="mileageImage">
         </div>

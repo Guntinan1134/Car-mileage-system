@@ -79,24 +79,32 @@
     const scriptURL = "https://script.google.com/macros/s/AKfycbxQ8YF6faK3VX7BQi0Fm19zi1Bd1sfv2ndGUFoqUfN6blzdHVKSGv7UP1CREx7dOABjNw/exec"; 
 
     function loadCarList() {
-        fetch(scriptURL) // มันจะไปเรียกฟังก์ชัน doGet ใน Apps Script
-            .then(response => response.json())
-            .then(data => {
-                const selectCar = document.getElementById("licensePlate");
-                selectCar.innerHTML = '<option value="" disabled selected>-- เลือกทะเบียนรถ --</option>'; // ล้างข้อความโหลด
+        fetch(scriptURL)
+        .then(res => res.json())
+        .then(data => {
+            const select = document.getElementById("licensePlate");
+            select.innerHTML = '<option value="" disabled selected>-- เลือกทะเบียนรถ --</option>';
+            
+            data.forEach(car => {
+                let opt = document.createElement("option");
+                opt.value = car.plate; 
                 
-                // เอาชื่อรถที่ได้มา วนลูปสร้างเป็นตัวเลือกให้พนักงาน
-                data.forEach(car => {
-                    let option = document.createElement("option");
-                    option.value = car;
-                    option.text = car;
-                    selectCar.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                document.getElementById("licensePlate").innerHTML = '<option value="">❌ โหลดไม่สำเร็จ กรุณารีเฟรช</option>';
+                // เช็คสถานะรถ
+                if (car.status === "ปกติ") {
+                    opt.text = "🚗 " + car.plate + " (พร้อมใช้งาน)";
+                } else {
+                    // ถ้ารถพัง หรือ ซ่อม ให้เปลี่ยนข้อความ และ "ล็อกไม่ให้กดเลือกได้"
+                    opt.text = "❌ " + car.plate + " (สถานะ: " + car.status + ")";
+                    opt.disabled = true; // 🌟 คำสั่งนี้แหละครับที่ล็อกไม่ให้พนักงานเลือก
+                }
+                
+                select.appendChild(opt);
             });
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            document.getElementById("licensePlate").innerHTML = '<option value="">❌ โหลดไม่สำเร็จ</option>';
+        });
     }
 
     // สั่งให้เริ่มโหลดชื่อรถทันทีที่เปิดเว็บ

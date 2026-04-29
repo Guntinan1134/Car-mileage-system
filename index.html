@@ -37,13 +37,9 @@
         </div>
 
         <div class="form-group">
-            <label for="licensePlate">ทะเบียนรถ</label>
+            <label for="licensePlate">🚗 เลือกทะเบียนรถ</label>
             <select id="licensePlate" name="licensePlate" required>
-                <option value="" disabled selected>-- เลือกทะเบียนรถ --</option>
-                <option value="4ฒข 6855 กทม">4ฒข 6855 กทม.</option>
-                <option value="3ฒฒ 2644 กทม">3ฒฒ 2644 กทม.</option>
-                <option value="3ฒฐ 6945 กทม">3ฒฐ 6945 กทม.</option>
-                <option value="3ฒม 9215 กทม">3ฒม 9215 กทม.</option>
+                <option value="" disabled selected>⏳ กำลังโหลดรายชื่อรถ...</option>
             </select> 
         </div>
         
@@ -81,6 +77,30 @@
     // ⚠️ แก้ไข 2 จุดนี้ครับ ⚠️
     const myLiffId = "2009930307-5pcVeyLx"; 
     const scriptURL = "https://script.google.com/macros/s/AKfycbxQ8YF6faK3VX7BQi0Fm19zi1Bd1sfv2ndGUFoqUfN6blzdHVKSGv7UP1CREx7dOABjNw/exec"; 
+
+    function loadCarList() {
+        fetch(scriptURL) // มันจะไปเรียกฟังก์ชัน doGet ใน Apps Script
+            .then(response => response.json())
+            .then(data => {
+                const selectCar = document.getElementById("licensePlate");
+                selectCar.innerHTML = '<option value="" disabled selected>-- เลือกทะเบียนรถ --</option>'; // ล้างข้อความโหลด
+                
+                // เอาชื่อรถที่ได้มา วนลูปสร้างเป็นตัวเลือกให้พนักงาน
+                data.forEach(car => {
+                    let option = document.createElement("option");
+                    option.value = car;
+                    option.text = car;
+                    selectCar.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("licensePlate").innerHTML = '<option value="">❌ โหลดไม่สำเร็จ กรุณารีเฟรช</option>';
+            });
+    }
+
+    // สั่งให้เริ่มโหลดชื่อรถทันทีที่เปิดเว็บ
+    loadCarList();
 
     // 🌟 เริ่มการทำงานของ LINE LIFF
     async function main() {
